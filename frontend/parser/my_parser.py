@@ -243,10 +243,12 @@ def p_statement(self: Parser) -> Statement:
     1. Call the corresponding parsing function and return its result if `self.next` is 'If'/'Return'.
     2. Otherwise just raise error as below.
     """
-    if self.next == "Return":
-        self.lookahead("Return")
-    else:
-        raise DecafSyntaxError(self.next_token)
+    # if self.next == "Return":
+    #     p_return(self)
+    # elif self.next == "If":
+    #     p_if(self)
+    # else:
+    raise DecafSyntaxError(self.next_token)
 
 
 @first("Int")
@@ -275,21 +277,19 @@ def p_block(self: Parser) -> Block:
         lookahead = self.lookahead
         if self.next in p_statement.first:
             # TODO: Complete the action if the next is a statement.
-            pass
+            print(p_statement.first)
         elif self.next in p_declaration.first:
             # TODO: Complete the action if the next is a declaration.
-            pass
+            print(self.next)
         else:
             raise DecafSyntaxError(self.next_token)
 
     block = Block()
     follow = {"RBrace"}
-
     while self.next not in follow:
         block_item = p_block_item(self)
         if block_item is not NULL:
             block.children.append(block_item)
-
     return block
 
 
@@ -317,7 +317,9 @@ def p_return(self: Parser) -> Return:
     3. Match token 'Semi'.
     4. Build a `Return` node and return it.
     """
-    pass
+    lookahead = self.lookahead
+    if self.next == "Return":
+        lookahead()
 
 
 def p_type(self: Parser) -> TypeLiteral:
@@ -327,7 +329,12 @@ def p_type(self: Parser) -> TypeLiteral:
     1. Match token 'Int'.
     2. Build a `TInt` node and return it.
     """
-    pass
+    lookahead = self.lookahead
+    if self.next == "Int":
+        lookahead()
+        # print(self.next)
+        node = TInt()
+        return node
 
 
 def p_program(self: Parser) -> Program:
@@ -362,6 +369,7 @@ class Parser:
             except StopIteration:
                 self.next_token = None
             return tok and tok.value
+        # print(tok, tok.type, type)
         raise DecafSyntaxError(tok)
 
     @property
