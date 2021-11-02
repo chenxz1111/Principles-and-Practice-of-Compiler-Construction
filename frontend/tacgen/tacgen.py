@@ -160,12 +160,12 @@ class TACGen(Visitor[FuncVisitor, None]):
         )
         expr.then.accept(self, mv)
         mv.visitBranch(exitLabel)
-        mv.visitLabel(skipLabel)
-        expr.otherwise.accept(self, mv)
-        mv.visitAssignment(expr.then.getattr("val"),expr.otherwise.getattr("val"))
+        mv.visitLabel(skipLabel) 	     # visit skip label
+        expr.otherwise.accept(self, mv)  # otherwise expression（与 visit skip label 交换位置后，条件表达式不短路）
+        mv.visitAssignment(expr.then.getattr("val"),expr.otherwise.getattr("val")) #与 if 语句不同，条件表达式具有返回值
         mv.visitLabel(exitLabel)
-        
         expr.setattr("val", expr.then.getattr("val"))
+        
 
     def visitIntLiteral(self, expr: IntLiteral, mv: FuncVisitor) -> None:
         expr.setattr("val", mv.visitLoad(expr.value))
