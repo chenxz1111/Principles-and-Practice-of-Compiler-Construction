@@ -356,10 +356,9 @@ def p_type(self: Parser) -> TypeLiteral:
     2. Build a `TInt` node and return it.
     """
     lookahead = self.lookahead
-    if self.next == "Int":
-        lookahead()
-        node = TInt()
-        return node
+    lookahead("Int")
+    node = TInt()
+    return node
 
 
 def p_program(self: Parser) -> Program:
