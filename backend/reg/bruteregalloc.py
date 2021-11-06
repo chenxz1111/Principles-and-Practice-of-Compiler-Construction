@@ -42,7 +42,11 @@ class BruteRegAlloc(RegAlloc):
             # maybe we don't need to alloc regs for all the basic blocks
             if bb.label is not None:
                 subEmitter.emitLabel(bb.label)
-            self.localAlloc(bb, subEmitter)
+            reachable = True
+            if graph.getInDegree(bb.id) == 0 and bb.id != 0:
+                reachable = False
+            if reachable:
+                self.localAlloc(bb, subEmitter)
         subEmitter.emitEnd()
 
     def bind(self, temp: Temp, reg: Reg):

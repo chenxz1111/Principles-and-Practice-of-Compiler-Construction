@@ -114,6 +114,18 @@ def p_while(p):
     """
     p[0] = While(p[3], p[5])
 
+def p_dowhile(p):
+    """
+    statement : Do statement While LParen expression RParen
+    """
+    p[0] = DoWhile(p[5], p[2])
+
+
+def p_for(p):
+    """
+    statement : For LParen block_item block_item opt_expression RParen statement
+    """
+    p[0] = For(p[3], p[4], p[5], p[7])
 
 def p_return(p):
     """
@@ -141,6 +153,12 @@ def p_break(p):
     statement_matched : Break Semi
     """
     p[0] = Break()
+
+def p_continue(p):
+    """
+    statement_matched : Continue Semi
+    """
+    p[0] = Continue()
 
 
 def p_opt_expression(p):
@@ -255,6 +273,7 @@ def p_error(t):
     """
     A naive (and possibly erroneous) implementation of error recovering.
     """
+    # print(t)
     if not t:
         error_stack.append(DecafSyntaxError(t, "EOF"))
         return

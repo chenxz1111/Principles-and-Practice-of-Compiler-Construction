@@ -18,7 +18,7 @@ class CFG:
 
         for i in range(len(nodes)):
             self.links.append((set(), set()))
-
+            
         for (u, v) in edges:
             self.links[u][1].add(v)
             self.links[v][0].add(u)
