@@ -158,10 +158,10 @@ class TACGen(Visitor[FuncVisitor, None]):
         mv.visitCondBranch(
             tacop.CondBranchOp.BEQ, expr.cond.getattr("val"), skipLabel
         )
-        expr.then.accept(self, mv)
+        expr.then.accept(self, mv)       # then expression（将其放到mv.visitCondBranch后，条件表达式不短路)
         mv.visitBranch(exitLabel)
         mv.visitLabel(skipLabel) 	     # visit skip label
-        expr.otherwise.accept(self, mv)  # otherwise expression（与 visit skip label 交换位置后，条件表达式不短路）
+        expr.otherwise.accept(self, mv)  # otherwise expression（将其放到mv.visitCondBranch后，条件表达式不短路)
         mv.visitAssignment(expr.then.getattr("val"),expr.otherwise.getattr("val")) #与 if 语句不同，条件表达式具有返回值
         mv.visitLabel(exitLabel)
         expr.setattr("val", expr.then.getattr("val"))
