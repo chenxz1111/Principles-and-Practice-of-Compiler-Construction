@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "/mnt/f/minidecaf/minidecaf-2019011236/minidecaf-tests/../main.py", line 105, in <module>
+    main()
+  File "/mnt/f/minidecaf/minidecaf-2019011236/minidecaf-tests/../main.py", line 91, in main
+    prog = _asm()
+  File "/mnt/f/minidecaf/minidecaf-2019011236/minidecaf-tests/../main.py", line 85, in _asm
+    asm = step_asm(_tac())
+  File "/mnt/f/minidecaf/minidecaf-2019011236/minidecaf-tests/../main.py", line 62, in step_asm
+    prog = asm.transform(p)
+  File "/mnt/f/minidecaf/minidecaf-2019011236/backend/asm.py", line 21, in transform
+    pair = self.emitter.selectInstr(func)
+  File "/mnt/f/minidecaf/minidecaf-2019011236/backend/riscv/riscvasmemitter.py", line 44, in selectInstr
+    instr.accept(selector)
+  File "/mnt/f/minidecaf/minidecaf-2019011236/utils/tac/tacinstr.py", line 174, in accept
+    v.visitPARAM(self, self.dst)
+AttributeError: 'RiscvInstrSelector' object has no attribute 'visitPARAM'
