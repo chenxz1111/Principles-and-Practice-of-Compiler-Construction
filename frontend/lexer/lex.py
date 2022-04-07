@@ -23,6 +23,7 @@ reserved = {
     "do": "Do",
 }
 
+t_Comma = ","
 t_Semi = ";"
 
 t_LParen = "("

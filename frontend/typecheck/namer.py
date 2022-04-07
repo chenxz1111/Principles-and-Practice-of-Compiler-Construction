@@ -37,10 +37,31 @@ class Namer(Visitor[ScopeStack, None]):
         if not program.hasMainFunc():
             raise DecafNoMainFuncError
 
-        program.mainFunc().accept(self, ctx)
+        # program.mainFunc().accept(self, ctx)
+        for f in program.functions():
+            program.functions()[f].accept(self, ctx)
 
-    def visitFunction(self, func: Function, ctx: ScopeStack) -> None:
+    def visitFunction(self, func: Function, ctx: ScopeStack) -> None: 
+        scope = Scope(ScopeKind.FORMAL)
+        func_symb = FuncSymbol(func.ident, func.ret_t, scope)
+        for child in func.params.children:
+            func_symb.addParaType(child.var_t)
+        ctx.declare(func_symb)
+        ctx.open(scope)
+        for param in func.params:
+            param.accept(self, ctx)
         func.body.accept(self, ctx)
+        ctx.close()
+
+    def visitParameter(self, param: Parameter, ctx: ScopeStack) -> None:
+        if ctx.findConflict(param.ident.value) is None :
+            symbol = VarSymbol(param.ident.value, param.var_t)
+            ctx.declare(symbol)
+            param.setattr('symbol', symbol)
+
+    def visitCall(self, call: Call, ctx: ScopeStack) -> None:
+        for argu in call.argument_list:
+            argu.accept(self, ctx)
 
     def visitBlock(self, block: Block, ctx: ScopeStack) -> None:
         for child in block:

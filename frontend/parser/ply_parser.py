@@ -41,10 +41,17 @@ def p_empty(p: yacc.YaccProduction):
 
 def p_program(p):
     """
-    program : function
+    program : program function
     """
-    p[0] = Program(p[1])
+    if p[2] is not NULL:
+        p[1].children.append(p[2])
+    p[0] = p[1]
 
+def p_function_empty(p):
+    """
+    program : empty
+    """
+    p[0] = Program()
 
 def p_type(p):
     """
@@ -55,10 +62,67 @@ def p_type(p):
 
 def p_function_def(p):
     """
-    function : type Identifier LParen RParen LBrace block RBrace
+    function : type Identifier LParen params RParen LBrace block RBrace
     """
-    p[0] = Function(p[1], p[2], p[6])
+    p[0] = Function(p[1], p[2], p[7], p[4])
 
+def p_params(p):
+    """
+    params : params extra_params
+    """
+    if p[2] is not NULL:
+        p[1].children.append(p[2])
+    p[0] = p[1]
+
+def p_params_first(p):
+    """
+    params : type Identifier
+    """
+    p[0] = ParameterList(Parameter(p[1], p[2]))
+
+def p_params_empty(p):
+    """
+    params : empty
+    """
+    p[0] = ParameterList()
+
+def p_extra_params(p):
+    """
+    extra_params : Comma type Identifier
+    """
+    p[0] = Parameter(p[2], p[3])
+
+def p_call(p):
+    """
+    postfix : Identifier LParen argu_params RParen
+    """
+    p[0] = Call(p[1], p[3])
+
+def p_argu_params(p):
+    """
+    argu_params : argu_params extra_argu_params
+    """
+    if p[2] is not NULL:
+        p[1].children.append(p[2])
+    p[0] = p[1]
+
+def p_argu_params_first(p):
+    """
+    argu_params : expression
+    """
+    p[0] = ExpressionList(p[1])
+
+def p_argu_params_empty(p):
+    """
+    argu_params : empty
+    """
+    p[0] = ExpressionList()
+
+def p_extra_argu_params(p):
+    """
+    extra_argu_params : Comma expression
+    """
+    p[0] = p[2]
 
 def p_block(p):
     """
@@ -217,6 +281,7 @@ def p_unary_expression(p):
     """
     unary(p)
 
+    
 
 def p_binary_expression(p):
     """

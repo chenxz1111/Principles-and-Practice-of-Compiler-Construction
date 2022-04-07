@@ -18,21 +18,43 @@ The TAC generation phase: translate the abstract syntax tree into three-address 
 
 class TACGen(Visitor[FuncVisitor, None]):
     def __init__(self) -> None:
-        pass
+        self.funclist = []
 
     # Entry of this phase
     def transform(self, program: Program) -> TACProg:
-        mainFunc = program.mainFunc()
-        pw = ProgramWriter(["main"])
+        
+        ## mainFunc = program.mainFunc()
+        ## pw = ProgramWriter(["main"])
         # The function visitor of 'main' is special.
-        mv = pw.visitMainFunc()
+        ## mv = pw.visitMainFunc()
 
-        mainFunc.body.accept(self, mv)
+        ## mainFunc.body.accept(self, mv)
         # Remember to call mv.visitEnd after the translation a function.
-        mv.visitEnd()
+        ## mv.visitEnd()
+        funcs = []
+        for child in program.children:
+            funcs.append(child.ident.value)
+        pw = ProgramWriter(funcs)
 
+        for child in program.children:
+            mv = pw.visitFunc(child.ident.value, len(child.params))
+            func = program.functions()[child.ident.value]
+            self.funclist.append(mv.func.entry)
+            for param in func.params.children:
+                param.getattr("symbol").temp = mv.freshTemp()
+            func.body.accept(self, mv)
+            mv.visitEnd()
         # Remember to call pw.visitEnd before finishing the translation phase.
         return pw.visitEnd()
+
+    def visitCall(self, call: Call, mv: FuncVisitor) -> None:
+        for argu in call.argument_list:
+            argu.accept(self, mv)
+            mv.visitPARAM(argu.getattr('val'))
+        for func in self.funclist:
+            if func.name == call.ident.value:
+                call.setattr('val',  mv.visitCALL(mv.freshTemp(), func))
+       
 
     def visitBlock(self, block: Block, mv: FuncVisitor) -> None:
         for child in block:

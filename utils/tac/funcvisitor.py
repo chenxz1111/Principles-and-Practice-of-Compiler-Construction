@@ -53,6 +53,15 @@ class FuncVisitor:
         temp = self.freshTemp()
         self.func.add(Unary(op, temp, operand))
         return temp
+    
+    # TODO : step 9
+    def visitPARAM(self, param: Temp) -> Temp:
+        self.func.add(PARAM(param))
+        return param
+
+    def visitCALL(self, dst: Temp, func: Label) -> None:
+        self.func.add(CALL(dst, func))
+        return dst
 
     def visitUnarySelf(self, op: UnaryOp, operand: Temp) -> None:
         self.func.add(Unary(op, operand, operand))
